@@ -2,7 +2,8 @@
 layout: post
 title: Reaper
 subtitle: HTB Write-up
-thumbnail-img: ![image](https://github.com/user-attachments/assets/de95e506-0bf4-4e0b-afb6-727838df5949)
+thumbnail-img: assets/img/Reaper.png
+share-img: assets/img/Reaper.png
 tags: [HackTheBox, Sherlock, Reaper]
 author: Jacob Acuna 
 ---
