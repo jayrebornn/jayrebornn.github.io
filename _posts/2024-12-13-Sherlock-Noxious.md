@@ -25,7 +25,8 @@ The attack process for an LLMNR attack includes multiple steps:
 
 # Tasks
 
--Task 1: Its suspected by the security team that there was a rogue device in Forela's internal network running responder tool to perform an LLMNR Poisoning attack. Please find the malicious IP Address of the machine.
+
+Task 1: Its suspected by the security team that there was a rogue device in Forela's internal network running responder tool to perform an LLMNR Poisoning attack. Please find the malicious IP Address of the machine.
 
 
 First, we filter for llmnr, we then go through and try to locate any suspicious-looking requests. That is when we see 172.17.19.135
@@ -39,7 +40,8 @@ We can also filter for udp.port == 5355 the port which llmnr activity occurs on 
 
 Answer: `172.17.79.135`
 
--Task 2: What is the hostname of the rogue machine?
+
+Task 2: What is the hostname of the rogue machine?
 
 Next, we are tasked with looking for the hostname of the malicious device. Given the IP address we should look for DHCP requests this will tell us the hostname. We can use the following filter in Wireshark 
 `ip.addr == 172.17.79.135 && dhcp` 
@@ -50,7 +52,8 @@ we can see that there are three different packets, one of these stands out. The 
 
 Answer: `kali`
 
--Task 3: Now we need to confirm whether the attacker captured the user's hash and it is crackable!! What is the username whose hash was captured?
+
+Task 3: Now we need to confirm whether the attacker captured the user's hash and it is crackable!! What is the username whose hash was captured?
 
 Filtering for smb2 we can see NTLMSSP Negotiate, this means that the hash was successfully able to be extracted. We can then see the user name in the NTLMSSP_AUTH packet as:
 
@@ -59,7 +62,8 @@ Filtering for smb2 we can see NTLMSSP Negotiate, this means that the hash was su
 
 Answer: `john.deacon`
 
--Task 4: In NTLM traffic we can see that the victim credentials were relayed multiple times to the attacker's machine. When were the hashes captured the First time?
+
+Task 4: In NTLM traffic we can see that the victim credentials were relayed multiple times to the attacker's machine. When were the hashes captured the First time?
 
 For this challenge we had to change the time format in Wireshark to make detection easier, we can use the view tab -> time display format -> UTC Date and Time. We can then scroll to the top and see the first time the hash was used 
 
@@ -67,7 +71,8 @@ For this challenge we had to change the time format in Wireshark to make detecti
 
 Answer: `2024-06-24 06:18:30`
 
--Task 5: What was the typo made by the victim when navigating to the file share that caused his credentials to be leaked?
+
+Task 5: What was the typo made by the victim when navigating to the file share that caused his credentials to be leaked?
 
 We can see the typo the victim made by searching for llmnr in Wireshark and scrolling until we see any weird spelling mistakes. 
 
@@ -76,7 +81,8 @@ We can see the typo the victim made by searching for llmnr in Wireshark and scro
 Answer: `DC001`
 
 
--Task 6: To get the actual credentials of the victim user we need to stitch together multiple values from the ntlm negotiation packets. What is the NTLM server challenge value?
+
+Task 6: To get the actual credentials of the victim user we need to stitch together multiple values from the ntlm negotiation packets. What is the NTLM server challenge value?
 
 For this challenge we had to locate a packet that contained the challenge value, once found we went to the packet and sifted through it until we found the challenge value. We can use the following method 
  SMB2 (Server Message Block ProtocolVersion 2) -> Session Setup Response (0x1) -> Security Blob -> GSS-API Generic -> SimpleProtected Negotiation -> negTokenTarg -> NTLM Secure Service Provider -> NTLM Server Challenge.
@@ -85,7 +91,8 @@ For this challenge we had to locate a packet that contained the challenge value,
 
 Answer: `601019d191f054f1`
 
--Task 7: Now doing something similar find the NTProofStr value.
+
+Task 7: Now doing something similar find the NTProofStr value.
 
 We have to follow the same methodology and find the NTProofStr value 
 
@@ -93,7 +100,8 @@ We have to follow the same methodology and find the NTProofStr value
 
 Answer: `c0cc803a6d9fb5a9082253a04dbd4cd4`
 
--Task 8: To test the password complexity, try recovering the password from the information found from packet capture. This is a crucial step as this way we can find whether the attacker was able to crack this and how quickly.
+
+Task 8: To test the password complexity, try recovering the password from the information found from packet capture. This is a crucial step as this way we can find whether the attacker was able to crack this and how quickly.
 
 To do this we had to create a txt file with the information that we gathered and use hashcat to crack the password. 
 User::Domain:ServerChallenge:NTProofStr:NTLMv2Response (Without the first 16 bytes \ 32 characters) 
@@ -112,7 +120,8 @@ Once this is done we can use hashcat and see if we can crack the password.
 Finally, we get our cracked password: 
 Answer: `NotMyPassword0k?`
 
--Task 9: Just to get more context surrounding the incident, what is the actual file share that the victim was trying to navigate to?
+
+Task 9: Just to get more context surrounding the incident, what is the actual file share that the victim was trying to navigate to?
 
 To find this we can filter for smb2 and look until we see any non-default file paths for a share. 
 
