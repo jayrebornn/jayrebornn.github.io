@@ -30,11 +30,12 @@ The attack process for an LLMNR attack includes multiple steps:
 
 First, we filter for llmnr, we then go through and try to locate any suspicious-looking requests. That is when we see 172.17.19.135
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/c76c8e23-fc1b-4e82-bb55-47f217268329/image.png)
+![image](https://github.com/user-attachments/assets/f58a2659-d9f5-44bc-b0f6-a5ac78a929c3)
+
 
 We can also filter for udp.port == 5355 the port which llmnr activity occurs on and locate the IP address that is different 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/9d8d90cc-a534-4957-af6f-a5e62368cef4/image.png)
+![image](https://github.com/user-attachments/assets/9a2824f0-8a59-45a9-b50b-2f8b4b04e965)
 
 Answer: `172.17.79.135`
 
@@ -45,7 +46,7 @@ Next, we are tasked with looking for the hostname of the malicious device. Given
 
 we can see that there are three different packets, one of these stands out. The DHCP request packet, once we open it and look inside we can see the hostname.
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/34011fea-4148-4a59-9796-f9ddfafb570f/image.png)
+![image](https://github.com/user-attachments/assets/aab2e6fb-5cbe-46ba-9c62-fb9aa74ebe42)
 
 Answer: `kali`
 
@@ -54,7 +55,7 @@ Answer: `kali`
 Filtering for smb2 we can see NTLMSSP Negotiate, this means that the hash was successfully able to be extracted. We can then see the user name in the NTLMSSP_AUTH packet as:
 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/524f1aa3-5cae-4f58-9a67-ab00252af6b9/image.png)
+![image](https://github.com/user-attachments/assets/2fca68d9-18ad-45ee-8220-13ad1ca295cc)
 
 Answer: `john.deacon`
 
@@ -62,7 +63,7 @@ Answer: `john.deacon`
 
 For this challenge we had to change the time format in Wireshark to make detection easier, we can use the view tab -> time display format -> UTC Date and Time. We can then scroll to the top and see the first time the hash was used 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/262f67d4-f6fe-4637-ad93-8e60b541c3c9/image.png)
+![image](https://github.com/user-attachments/assets/e1ed1455-57e1-436d-afc8-cb5c4d83547b)
 
 Answer: `2024-06-24 06:18:30`
 
@@ -70,7 +71,7 @@ Answer: `2024-06-24 06:18:30`
 
 We can see the typo the victim made by searching for llmnr in Wireshark and scrolling until we see any weird spelling mistakes. 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/67d3bb44-8a74-4bd6-8d3b-421bcbbe4d20/image.png)
+![image](https://github.com/user-attachments/assets/1d85375b-6d05-413c-a4d8-53817ec11c41)
 
 Answer: `DC001`
 
@@ -80,7 +81,7 @@ Answer: `DC001`
 For this challenge we had to locate a packet that contained the challenge value, once found we went to the packet and sifted through it until we found the challenge value. We can use the following method 
  SMB2 (Server Message Block ProtocolVersion 2) -> Session Setup Response (0x1) -> Security Blob -> GSS-API Generic -> SimpleProtected Negotiation -> negTokenTarg -> NTLM Secure Service Provider -> NTLM Server Challenge.
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/cc56339a-9bdb-461b-bd73-c6428b88e0a6/image.png)
+![image](https://github.com/user-attachments/assets/e7077de4-9263-49fc-bf15-8714d4b13972)
 
 Answer: `601019d191f054f1`
 
@@ -88,7 +89,7 @@ Answer: `601019d191f054f1`
 
 We have to follow the same methodology and find the NTProofStr value 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/31fce284-1144-4d21-8b46-445fd430907b/image.png)
+![image](https://github.com/user-attachments/assets/b7f2e823-294d-4553-94e4-995a6c9ac8b6)
 
 Answer: `c0cc803a6d9fb5a9082253a04dbd4cd4`
 
@@ -98,15 +99,15 @@ To do this we had to create a txt file with the information that we gathered and
 User::Domain:ServerChallenge:NTProofStr:NTLMv2Response (Without the first 16 bytes \ 32 characters) 
 
 This means that we are missing one more piece of value the NTLMv2Response but this can be found in the same place as the NTProofStr. 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/474ed1dd-902e-4e12-a22d-f3f7a12840b2/image.png)
+![image](https://github.com/user-attachments/assets/cc4dc9fa-ba13-4625-abf8-2cec124a6286)
 
 Now with the last piece of information, we can craft our .txt file. 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/64ed3c9b-c6fb-405d-af53-4bed348a56e3/image.png)
+![image](https://github.com/user-attachments/assets/0a1958be-0c64-4e7a-bbb4-e725e4bbba79)
 
 Once this is done we can use hashcat and see if we can crack the password. 
 `hashcat -a0 -m5600 noxious.txt /usr/share/wordlists/rockyou.txt`
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/059db279-80d8-4a04-ad17-e2b58a580086/image.png) 
+![image](https://github.com/user-attachments/assets/a5cd4976-479a-439f-a408-80060896bde6)
 
 Finally, we get our cracked password: 
 Answer: `NotMyPassword0k?`
@@ -115,12 +116,12 @@ Answer: `NotMyPassword0k?`
 
 To find this we can filter for smb2 and look until we see any non-default file paths for a share. 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/1e6ec9bc-9e2c-4fab-9fa0-5a3eba28164e/image.png)
+![image](https://github.com/user-attachments/assets/931d53f9-ef07-486f-8ca8-41db34d6bd6a)
 
 Answer:`\\DC01\DC-Confidential`
 
 # Conclusion 
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/54a442f6-2e57-4f15-9a19-04e63ae84bed/43654884-c7ab-4f0a-aa35-529d79314d76/image.png)
+![image](https://github.com/user-attachments/assets/a778b92f-8bc6-4e7f-bac1-641f5b26154d)
 
 Overall, I think this was a super fun Sherlock that went into LLMNR poisoning. This is my first Sherlock after finishing CDSA and I enjoyed the Wireshark detective work that went into this challenge. The CDSA pathway on Responder like attacks with LLMNR and NBT-NS which was useful in this challnege. 
