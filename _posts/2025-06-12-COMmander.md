@@ -10,7 +10,7 @@ tags: [COM, DCOM, RPC, Windows Internals, Detections]
 
 # Introduction 
 
-This is some research into RPC and detecting COM and DCOM attacks that @hullabrian and I worked on during our free time. This is something that can hopefully make detection
+This is some research into RPC and detecting COM and DCOM attacks that [@hullabrian](https://twitter.com/hullabrian) and I worked on during our free time. This is something that can hopefully make detection
 on advanced attacks more easily. 
 
 The GitHub can be found on [GitHub](https://github.com/HullaBrian/COMmander)
