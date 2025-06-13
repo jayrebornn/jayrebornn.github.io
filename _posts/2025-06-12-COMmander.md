@@ -64,7 +64,7 @@ Now, when an alert is triggered, we will get information on the components that 
 # DefendNot
 
 The first detection we made and what inspired this project was an attack called `DefendNot` created by `es3n1n`. This was a unique attack where you can manipulate the Windows Security Service (WSC) to register your anti-virus, which in turn disables Microsoft Defender. 
-We can download the file using the GitHub repo for the tool. Once we have it on our machine, it is as easy as running the `defendnot-loader.exe`  and passing any parameters we like.
+We can download the file using the GitHub repo for the tool. Once we have it on our machine, it is as easy as running the `defendnot-loader.exe`  and passing any parameters we like, in this case we will name our AV COMmander.
 
 ![image](/assets/img/commander/commander-defendnot.png)
 
