@@ -91,12 +91,12 @@ Using these IoCs, we can now build our detection for COMmander.
 
 The format for the detections in COMmander is XML, so our custom detection for DefendNot will look like.
 
-'<Rules>
-	<Rule name="defendnot">
+'
+<Rule name="defendnot">
 	<InterfaceUUID>06bba54a-be05-49f9-b0a0-30f790261023</InterfaceUUID>
 	<OpNum>13</OpNum>
 	<Endpoint></Endpoint>
-</Rules>'
+ </Rule>'
 
 To test our detection, we want to make sure that the COMmander service is running. We can do this in the service application. 
 
@@ -111,3 +111,42 @@ Now checking our Event Logs we see that the attack was detected.
 If we expand the alert we will get additional information about the alert that can aid us in the investigation. 
 
 ![image](/assets/img/commander/commander-enrich.png)
+
+
+# ForsHops
+
+The next attack we will talk about is `ForsHops`  by `Dylan Tran` and `Jimmy Bayne` . This attack is noted as a way to use DCOM for fileless lateral movement. 
+
+For this attack to work, we need to pass a file and an IP address. For testing purposes, we will use localhost and Cable.exe, a tool created by `@logan-goins`
+
+![image](/assets/img/commander/forshops.png)
+
+This is our command line argument, however, before we execute, we will want to ensure that RPCMon is running to view the connections.
+
+After we run we need to stop RPCMon and search for the process name `ForsHops` from here we will see all activity related to the attack.
+
+![image](/assets/img/commander/forshops-rpc.png)
+
+We see the interface that is being used is `338CD001-2244-31F1-AAAA-900038001003`
+
+This interface is used for Remote Registry services and is uncommon to see in day-to-day operations. So any activity should be alerted to, which allows analysts to further triage the events. 
+
+The ruleset for this detection will look like this.
+
+'\<Rule name="Remote Registry Connection">
+	\<InterfaceUUID>338cd001-2244-31f1-aaaa-900038001003</InterfaceUUID>
+	\<Endpoint>\PIPE\winreg</Endpoint>
+\</Rule>'
+
+We can run ForsHops with the following parameters. 
+
+![image](/assets/img/commander/forshops-execute.png)
+
+After seeing that the attack was successful we can see that the RemoteRegistry alert was detected. 
+
+![image](/assets/img/commander/forshops-detection.png)
+
+We can also see that we are given information that can give additional information on the alert and can help our investigation. 
+
+![image](/assets/img/commander/forshops-enrich.png)
+
