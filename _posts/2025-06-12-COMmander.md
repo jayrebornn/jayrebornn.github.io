@@ -27,12 +27,11 @@ There are two ways of using COMmander, either as a service that creates Windows 
 - [Introduction](#introduction)
 - [Installing COMmander](#COMmander)
 - [Attacks](#attacks)
-  - [DefendNot](#defendNot)
+  - [DefendNot](#defendnot)
   - [ForsHops](#forshops)
-  - [RemoteRegistry](#remoteRegistry)
-  - [PetitPotam](#petitPotam)
-  - [DCSync](#dcSync)
-  - [CVE-2025-33073](#cve-2025-33073)
+  - [RemoteRegistry](#remoteregistry)
+  - [PetitPotam](#petitpotam)
+  - [DCSync](#dcsync)
 - [Conclusion](#conclusion)
 - [References](#references)
 
@@ -91,12 +90,13 @@ Using these IoCs, we can now build our detection for COMmander.
 
 The format for the detections in COMmander is XML, so our custom detection for DefendNot will look like.
 
-'
+```
 <Rule name="defendnot">
 	<InterfaceUUID>06bba54a-be05-49f9-b0a0-30f790261023</InterfaceUUID>
 	<OpNum>13</OpNum>
 	<Endpoint></Endpoint>
- </Rule>'
+ </Rule>
+```
 
 To test our detection, we want to make sure that the COMmander service is running. We can do this in the service application. 
 
@@ -133,10 +133,12 @@ This interface is used for Remote Registry services and is uncommon to see in da
 
 The ruleset for this detection will look like this.
 
-'\<Rule name="Remote Registry Connection">
+```
+\<Rule name="Remote Registry Connection">
 	\<InterfaceUUID>338cd001-2244-31f1-aaaa-900038001003</InterfaceUUID>
 	\<Endpoint>\PIPE\winreg</Endpoint>
-\</Rule>'
+\</Rule>
+```
 
 We can run ForsHops with the following parameters. 
 
@@ -149,4 +151,139 @@ After seeing that the attack was successful we can see that the RemoteRegistry a
 We can also see that we are given information that can give additional information on the alert and can help our investigation. 
 
 ![image](/assets/img/commander/forshops-enrich.png)
+
+# RemoteRegistry
+
+After making the `ForsHops`  detection we continued testing and found that the interface winreg.dll had a specific function that was seen in multiple attacks. This function was the `BaseRegSaveKey` function and is assigned `OpNum 20` . This function is used by attackers as it makes the enumeration of entire registry hives easy. Making this into a detection allows us to alert on any attack looking to dump credentials. 
+
+Some of the attacks we saw that were alerted are: 
+
+`netexec` 
+
+`Impacket Tools` like `secretsdump.py` 
+
+`dploot`  (except the triage parameter)
+
+To create a dectection we can use a rule like: 
+
+```
+<Rule name="Remote Registry BaseRegSaveKey">
+	<InterfaceUUID>338cd001-2244-31f1-aaaa-900038001003</InterfaceUUID>
+	<Endpoint>\PIPE\winreg</Endpoint>
+	<OpNum>20</OpNum>
+</Rule>
+```
+
+In this example we will show NetExec being detected. For this to work we will need to set up a Kali machine (attacker) and make sure that it can reach our victim computer with COMmander running. 
+
+![image](/assets/img/commander/reg-nxc.png)
+
+After running the attack we see that COMmander detects the attack based on the BaseRegSaveKey being called. 
+
+![image](/assets/img/commander/reg-nxc-event.png)
+
+This next attack is using `secretsdump.py` to dump the credentials on the remote system. 
+
+![image](/assets/img/commander/reg-secrets.png)
+
+Then we can go back to our victim machine and see that an alert is generated. 
+
+![image](/assets/img/commander/reg-secrets-event.png)
+
+This simple detection based on the Interface UUID and specific OpNum will be able to catch attackers looking to dump credentials on remote machines.
+
+
+# PetitPotam
+
+This attack is known as a NTLM Relay attack, and can be used to coerce a host to authenticate to another machine allowing privilege escalation. The GitHub that describes the attack gives us two Interfaces that we can build our detection on. The first is c681d488-d850-11d0-8c52-00c04fd90f7e and the second is df1941c5-fe89-4e79-bf10-463657acf44d 
+
+![image](/assets/img/commander/petitpotam.png)
+
+We can also look at the microsoft documentations and find the OpNum's 
+
+https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-efsr/403c7ae0-1a3a-4e96-8efc-54e79a2cc451
+
+With the interfaces and OpNums in the documentation we can base our detection on these rules.
+
+```
+<Rule name="Authentication Coercion using PetitPotam EfsRpcOpenFileRaw">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>0</OpNum>
+		<ProcessName>lsass</ProcessName>
+	</Rule>
+	<Rule name="Authentication Coercion using PetitPotam EfsRpcEncryptFileSrv">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>4</OpNum>
+	</Rule>
+	<Rule name="Authentication Coercion using PetitPotam EfsRpcDecryptFileSrv">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>5</OpNum>
+	</Rule>
+	<Rule name="Authentication Coercion using PetitPotam EfsRpcQueryUsersOnFile">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>6</OpNum>
+	</Rule>
+	<Rule name="Authentication Coercion using PetitPotam EfsRpcQueryRecoveryAgents">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>7</OpNum>
+	</Rule>
+	<Rule name="Authentication Coercion using PetitPotam EfsRpcAddUsersToFile">
+		<InterfaceUUID>c681d488-d850-11d0-8c52-00c04fd90f7e</InterfaceUUID>
+		<OpNum>9</OpNum>
+	</Rule>
+```
+
+ 
+
+# DCSync
+
+Our next detection is to detect DCSync attacks. This attack allows the attacker to impersonate the Domain Controller (DC) which allows them to create a replica of the data stored on the DC. 
+
+For this attack we can use secretsdump.py 
+
+![image](/assets/img/commander/secretsdump.png)
+
+Now we can go to event viewer and find that an alert is generated. 
+
+![image](/assets/img/commander/secretsdump-ev.png)
+
+
+
+```
+<Rule name="DCSync">
+    	<InterfaceUUID>e3514235-4b06-11d1-ab04-00c04fc2dcd2</InterfaceUUID>
+  	<OpNum>3</OpNum>
+</Rule>
+```
+
+
+
+# Conclusion
+
+With new attacks coming out every day we hope to continuously add new detections and continue our research into window internals. We hope you find this useful and can use this to detect any malicious behavior :)
+
+Some future detections that might be possible are RemoteMonologue by @3lp4tr0n, Certipy, and CVE-2025-33073 
+(We already have the RPC functions and interfaces that are used we just need to continue testing our detections and refine the alerts.)  
+
+
+# References 
+
+https://learn.microsoft.com/en-us/windows/win32/midl/com-dcom-and-type-libraries
+
+https://learn.microsoft.com/en-us/windows/win32/learnwin32/what-is-a-com-interface-
+
+https://learn.microsoft.com/en-us/windows/win32/com/clsid-key-hklm
+
+https://blog.es3n1n.eu/posts/how-i-ruined-my-vacation/
+
+https://deepwiki.com/es3n1n/defendnot
+https://www.akamai.com/blog/security-research/rpc-toolkit-fantastic-interfaces-how-to-find
+
+https://www.ibm.com/think/news/fileless-lateral-movement-trapped-com-objects
+
+https://www.kali.org/tools/impacket/
+
+https://gist.github.com/enigma0x3/092da9f249499391adffe2c46abfa1a1#file-rpc_dump_august-txt-L336
+
+https://github.com/topotam/PetitPotam
 
