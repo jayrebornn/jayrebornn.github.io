@@ -6,6 +6,8 @@ share-img: /assets/img/commander/COMmander.png
 tags: [COM, DCOM, RPC, Windows Internals, Detections]
 ---
 
+
+
 # Introduction 
 
 This is some research into RPC and detecting COM and DCOM attacks that @hullabrian and I worked on during our free time. This is something that can hopefully make detection
@@ -36,6 +38,8 @@ There are two ways of using COMmander, either as a service that creates Windows 
   - [DCSync](#dcsync)
 - [Conclusion](#conclusion)
 - [References](#references)
+
+
 
 
 # Installing COMmander
@@ -115,6 +119,8 @@ If we expand the alert, we will get additional information about the alert that 
 ![image](/assets/img/commander/commander-enrich.png)
 
 
+
+
 # ForsHops
 
 The next attack we will talk about is `ForsHops`  by `Dylan Tran` and `Jimmy Bayne`. This attack is noted as a way to use DCOM for fileless lateral movement. 
@@ -154,6 +160,9 @@ We can also see that we are given information that can provide additional inform
 
 ![image](/assets/img/commander/forshops-enrich.png)
 
+
+
+
 # RemoteRegistry
 
 After making the `ForsHops`  detection we continued testing and found that the interface winreg.dll had a specific function that was seen in multiple attacks. This function was the `BaseRegSaveKey` function and is assigned `OpNum 20` . This function is used by attackers as it makes the enumeration of entire registry hives easy. Making this into a detection allows us to alert on any attack looking to dump credentials. 
@@ -183,6 +192,8 @@ In this example, we will show NetExec being detected. For this to work, we will 
 After running the attack, we see that COMmander detects the attack based on the BaseRegSaveKey being called. 
 
 ![image](/assets/img/commander/reg-nxc-event.png)
+
+
 
 
 # PetitPotam
@@ -233,6 +244,8 @@ After seeing that the attack was successful, we can look at Event Viewer and see
 ![image](/assets/img/commander/petitpotam-ev.png)
 
 
+
+
 # DCSync
 
 Our next detection is to detect DCSync attacks. This attack allows the attacker to impersonate the Domain Controller (DC), which allows them to create a replica of the data stored on the DC. 
@@ -256,6 +269,7 @@ Now we can go to Event Viewer and see that an alert has been generated.
 
 
 
+
 # Conclusion
 
 With new attacks coming out daily, we hope to continuously add new detections and continue our research into Windows internals. Our next goal is to try and forward these logs to Elastic to be able to search the logs using their dashboard.
@@ -264,6 +278,7 @@ We hope you find this useful and can use this to detect any malicious behavior :
 
 Some future detections that might be possible are RemoteMonologue by @3lp4tr0n, Certipy, and CVE-2025-33073 
 (We already have the RPC functions and interfaces that are used; we just need to continue testing our detections and refining the alerts.)  
+
 
 
 # References 
