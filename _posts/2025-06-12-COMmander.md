@@ -276,7 +276,7 @@ With new attacks coming out daily, we hope to continuously add new detections an
 
 We hope you find this useful and can use this to detect any malicious behavior :)
 
-Some future detections that might be possible are RemoteMonologue by @3lp4tr0n, Certipy, and CVE-2025-33073 
+Some future detections that might be possible are `RemoteMonologue` by `@3lp4tr0n`, `Certipy`, and `CVE-2025-33073` 
 (We already have the RPC functions and interfaces that are used; we just need to continue testing our detections and refining the alerts.)  
 
 
