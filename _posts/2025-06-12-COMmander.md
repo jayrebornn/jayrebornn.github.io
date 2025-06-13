@@ -182,16 +182,6 @@ After running the attack we see that COMmander detects the attack based on the B
 
 ![image](/assets/img/commander/reg-nxc-event.png)
 
-This next attack is using `secretsdump.py` to dump the credentials on the remote system. 
-
-![image](/assets/img/commander/reg-secrets.png)
-
-Then we can go back to our victim machine and see that an alert is generated. 
-
-![image](/assets/img/commander/reg-secrets-event.png)
-
-This simple detection based on the Interface UUID and specific OpNum will be able to catch attackers looking to dump credentials on remote machines.
-
 
 # PetitPotam
 
