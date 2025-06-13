@@ -137,7 +137,7 @@ After we run we need to stop RPCMon and search for the process name `ForsHops` f
 
 We see the interface that is being used is `338CD001-2244-31F1-AAAA-900038001003`
 
-This interface is used for Remote Registry services and is uncommon to see in day-to-day operations. So any activity should be alerted to, which allows analysts to further triage the events. 
+This interface is used for Remote Registry services. We can build our detection to look for any time the Remote Registry was accessed, which can then alert analysts to behavior that can potentially be malicious. 
 
 The ruleset for this detection will look like this.
 
