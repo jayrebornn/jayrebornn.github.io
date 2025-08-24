@@ -20,7 +20,11 @@ author: Jacob Acuna
 ###############################################
 
 navbar-links:
+  About Me: "aboutme"
+  Linkedin: "https://www.linkedin.com/in/jacob-acuna1/"
   Resume: "assets/RedactedR.pdf"
+  
+  
 
 ################
 # --- Logo --- #
