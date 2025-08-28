@@ -91,7 +91,7 @@ layout: page
           <li class="list-inline-item">
             <a href="{{ '/tags' | absolute_url }}#{{- tag -}}">{{- tag -}}</a>
           </li>
-          {% endfor %}
+          {% endunless %}
         </ul>
       </div>
       {% endif %}
