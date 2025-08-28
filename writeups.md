@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Write Ups
+subtitle: place holder
 --- 
 
 {% assign writeup_posts = site.posts | where_exp: "post", "post.tags contains 'writeup'" %}
