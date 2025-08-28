@@ -281,6 +281,13 @@ defaults:
       type: "writeup"
     values:
       layout: "post"
+      comments: true
+      social-share: true
+  -
+    scope:
+      path: "" # any file that's not a post will be a "page" layout by default
+    values:
+      layout: "page"
 
   
 
