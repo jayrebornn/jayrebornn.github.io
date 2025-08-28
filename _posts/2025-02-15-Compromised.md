@@ -4,7 +4,7 @@ title: Compromised
 subtitle: HTB Write-up
 thumbnail-img: assets/img/compromised.png
 share-img: assets/img/compromised.png
-tags: [HackTheBox, Sherlock, Compromised, SOC, Malware Analysis]
+tags: [HackTheBox, Sherlock, Compromised, SOC, Malware Analysis, writeup]
 author: Jacob Acuna 
 ---
 
