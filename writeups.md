@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Write Ups
-subtitle: place holder
+subtitle: This is where I post some walk-throughs on HTB, CTFs, or other cool stuff
 --- 
 
 {% assign writeup_posts = site.posts | where_exp: "post", "post.tags contains 'writeup'" %}
