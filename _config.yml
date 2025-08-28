@@ -23,7 +23,7 @@ navbar-links:
   About Me: "aboutme"
   Linkedin: "https://www.linkedin.com/in/jacob-acuna1/"
   Resume: "assets/RedactedR.pdf"
-  Write Ups: "writeups"
+  Write Ups: "writeup"
   
   
 
@@ -277,9 +277,12 @@ defaults:
       social-share: true # add social media sharing buttons to all blog posts
   -
     scope:
-      path: "writeups" # any file that's not a post will be a "page" layout by default
+      path: ""
+      type: "writeup"
     values:
-      layout: "page"
+      layout: "post"
+
+  
 
 # Exclude these files from production site
 exclude:
