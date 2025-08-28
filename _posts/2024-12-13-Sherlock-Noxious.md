@@ -4,7 +4,7 @@ title: Noxious
 subtitle: HTB Write-up
 thumbnail-img: assets/img/Noxious.png
 share-img: assets/img/Noxious.png
-tags: [HackTheBox, Sherlock, Noxious, SOC]
+tags: [HackTheBox, Sherlock, Noxious, SOC, writeup]
 author: Jacob Acuna 
 ---
 
