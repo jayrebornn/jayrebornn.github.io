@@ -4,7 +4,7 @@ title: Reaper
 subtitle: HTB Write-up
 thumbnail-img: assets/img/Reaper.png
 share-img: assets/img/Reaper.png
-tags: [HackTheBox, Sherlock, Reaper]
+tags: [HackTheBox, Sherlock, Reaper, writeup]
 author: Jacob Acuna 
 ---
 
